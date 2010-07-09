@@ -39,16 +39,17 @@ include Racket
 
 ICMP_IDENTIFIER = (rand * 100000).to_i
 
-dev = ARGV[0] || "vpn6"
+dev = ARGV[0] || "eth0"
 eth_src_addr = ARGV[1] || L2::Misc.randommac;
-ipv6_src_addr = ARGV[2] || L3::Misc.ipv62long(L3::Misc::linklocaladdr(eth_src_addr))
+ipv6_src_addr = L3::Misc.ipv62long(ARGV[2]) || L3::Misc.ipv62long(L3::Misc::linklocaladdr(eth_src_addr))
 timeout = ARGV[3] || 65535
 
 # open capturing device
 cap = Pcap.open_live(dev, timeout, true, 5)
 raise RuntimeError, "unable to open device #{dev}" unless cap
 
-
+# if the interface does not have an ipv4 address set, the next line wont work
+#cap.setfilter("icmp6")
 
 # create racket stuff ...
 rpacket = Racket::Racket.new
@@ -62,7 +63,7 @@ rpacket.l2.ethertype = 0x86DD # ipv6
 
 # ip stuff...
 rpacket.l3 = L3::IPv6.new
-rpacket.l3.src_ip = 
+rpacket.l3.src_ip = ipv6_src_addr
 rpacket.l3.dst_ip = L3::Misc.ipv62long("ff02::1")
 # next header is icmpv6
 rpacket.l3.nhead = 58
@@ -71,6 +72,7 @@ rpacket.l3.nhead = 58
 rpacket.l4 = L4::ICMPv6EchoRequest.new
 rpacket.l4.id = ICMP_IDENTIFIER
 rpacket.l4.sequence = 1
+# rpacket.l4.payload = "01234567890123456789012345678901234567890123456789012345"
 rpacket.l4.fix!(rpacket.l3.src_ip, rpacket.l3.dst_ip)
 
 # send the packet
@@ -80,14 +82,16 @@ puts "sent echo request (size: #{f})"
 
 # and capture all packets which are icmpv6 and have the type 129
 cap.each do  |pkt|
+
   eth = L2::Ethernet.new(pkt)
+
   # we want ipv6 traffic only
   next unless eth.ethertype == 0x86DD 
 
   ip = L3::IPv6.new(eth.payload)
   # we want icmpv6 only
   next unless 58 == ip.nhead
-
+  
   next unless L4::ICMPv6.new(ip.payload).type == L4::ICMPv6::ICMPv6_TYPE_ECHO_REPLY
   icmpv6_echo_reply = L4::ICMPv6Echo.new ip.payload
 
