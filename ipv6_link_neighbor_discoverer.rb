@@ -1,13 +1,9 @@
 #
-# ipv6 neighbor discovery within the link scope
+# ipv6 neighbor discovery within the link 
 # extended some examples of jon hart
-# 
-# gems:
-#  - racket (gem install --source http://spoofed.org/files/racket racket)
-#  - pcaprub
-#  - bit-struct
 #
-
+# dominik.elsbroek@gmail.com
+#
 
 require 'rubygems'
 require 'racket'
