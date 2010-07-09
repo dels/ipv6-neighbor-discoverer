@@ -69,6 +69,6 @@ cap.each do  |pkt|
     puts "incorrect id: #{icmpv6_echo_reply.id}"
     next
   end
-  # print all link local ip addresses have responded
+  # print all link local ip addresses which have responded
   puts "#{Racket::L3::Misc::long2ipv6 ip.src_ip} is alive and responding"
 end
