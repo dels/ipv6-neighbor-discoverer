@@ -2,7 +2,7 @@
 # ipv6 neighbor discovery within the link 
 # extended some examples of jon hart
 #
-# dominik.elsbroek@gmail.com
+# dominik.elsbroek@gmail.com 2010-07-08
 #
 
 require 'rubygems'
@@ -11,7 +11,7 @@ require 'pcaprub'
 
 include Racket
 
-ICMP_IDENTIFIER = 4711
+ICMP_IDENTIFIER = (rand * 100000).to_i
 
 dev = ARGV[0] || "vpn6"
 eth_src_addr = ARGV[1] || L2::Misc.randommac;
