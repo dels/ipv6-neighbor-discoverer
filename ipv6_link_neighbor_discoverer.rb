@@ -30,7 +30,8 @@ rpacket.iface = dev
 rpacket.l2 = L2::Ethernet.new
 rpacket.l2.src_mac = eth_src_addr
 rpacket.l2.dst_mac = "33:33:00:00:00:01"
-rpacket.l2.ethertype = 0x86DD # ipv6                                                                                                                                                                                                                                                 
+rpacket.l2.ethertype = 0x86DD # ipv6
+
 # ip stuff...
 rpacket.l3 = L3::IPv6.new
 rpacket.l3.src_ip = 
