@@ -58,18 +58,14 @@ cap.each do  |pkt|
 
   ip = L3::IPv6.new(eth.payload)
   # we want icmpv6 only
-  next unless 58 == ip.nhead 
+  next unless 58 == ip.nhead
 
-  if L4::ICMPv6.new(ip.payload).type == L4::ICMPv6::ICMPv6_TYPE_ECHO_REPLY
-    icmpv6_echo_reply = L4::ICMPv6Echo.new ip.payload
-  else
-    next
-  end
+  next unless L4::ICMPv6.new(ip.payload).type == L4::ICMPv6::ICMPv6_TYPE_ECHO_REPLY
+  icmpv6_echo_reply = L4::ICMPv6Echo.new ip.payload
+
   # we only want packets with the correct id we just have sent
-  unless ICMP_IDENTIFIER == icmpv6_echo_reply.id
-    puts "incorrect id: #{icmpv6_echo_reply.id}"
-    next
-  end
+  next unless ICMP_IDENTIFIER == icmpv6_echo_reply.id
+
   # print all link local ip addresses which have responded
   puts "#{Racket::L3::Misc::long2ipv6 ip.src_ip} is alive and responding"
 end
