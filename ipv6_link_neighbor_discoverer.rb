@@ -42,10 +42,10 @@ ICMP_IDENTIFIER = (rand * 100000).to_i
 dev = ARGV[0] || "eth0"
 eth_src_addr = ARGV[1] || L2::Misc.randommac;
 ipv6_src_addr = L3::Misc.ipv62long(ARGV[2]) || L3::Misc.ipv62long(L3::Misc::linklocaladdr(eth_src_addr))
-timeout = ARGV[3] || 65535
+snaplen = ARGV[3] || 65535
 
 # open capturing device
-cap = Pcap.open_live(dev, timeout, true, 5)
+cap = Pcap.open_live(dev, snaplen, true, 5)
 raise RuntimeError, "unable to open device #{dev}" unless cap
 
 # if the interface does not have an ipv4 address set, the next line wont work
@@ -82,7 +82,6 @@ puts "sent echo request (size: #{f})"
 
 # and capture all packets which are icmpv6 and have the type 129
 cap.each do  |pkt|
-
   eth = L2::Ethernet.new(pkt)
 
   # we want ipv6 traffic only
@@ -101,3 +100,5 @@ cap.each do  |pkt|
   # print all link local ip addresses which have responded
   puts "#{Racket::L3::Misc::long2ipv6 ip.src_ip} is alive and responding"
 end
+
+
