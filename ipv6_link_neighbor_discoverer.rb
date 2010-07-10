@@ -25,8 +25,9 @@
 # or implied, of <copyright holder>.
 
 #
-# ipv6 neighbor discovery within the link 
-# extended some examples of jon hart's racket examples
+# ipv6 neighbor discovery within the current link 
+# 
+# proof of concept
 #
 # dominik.elsbroek@gmail.com 2010-07-08
 #
@@ -45,11 +46,9 @@ ipv6_src_addr = L3::Misc.ipv62long(ARGV[2]) || L3::Misc.ipv62long(L3::Misc::link
 snaplen = ARGV[3] || 65535
 
 # open capturing device
+# see http://www.goto.info.waseda.ac.jp/~fukusima/ruby/pcap/doc/Capture.html
 cap = Pcap.open_live(dev, snaplen, true, 5)
 raise RuntimeError, "unable to open device #{dev}" unless cap
-
-# if the interface does not have an ipv4 address set, the next line wont work
-#cap.setfilter("icmp6")
 
 # create racket stuff ...
 rpacket = Racket::Racket.new
@@ -72,7 +71,6 @@ rpacket.l3.nhead = 58
 rpacket.l4 = L4::ICMPv6EchoRequest.new
 rpacket.l4.id = ICMP_IDENTIFIER
 rpacket.l4.sequence = 1
-# rpacket.l4.payload = "01234567890123456789012345678901234567890123456789012345"
 rpacket.l4.fix!(rpacket.l3.src_ip, rpacket.l3.dst_ip)
 
 # send the packet

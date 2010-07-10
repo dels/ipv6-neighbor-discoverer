@@ -1,6 +1,9 @@
 
 This tool discovers all neigbors within the hosts current link. This is done by sending an icmpv6 type echo request packet to ff02::1. 
 
+BUT: This is proof of concept only! It will never terminate. So if you think you have seen all your neighbors you have to quit with CTRL-C.
+
+
 needed gems:
  - racket (gem install --source http://spoofed.org/files/racket racket)
  - pcaprub
